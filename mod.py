@@ -20,16 +20,20 @@ class Mod:
     def value(self):
         return self._value
 
+    def _retrieve_value(self, other):
+        if isinstance(other, Mod) and self.modulus == other.modulus:
+            return other.value
+        if isinstance(other, int):
+            return other % self.modulus
+        raise TypeError('Incompatible types')
+
     def __eq__(self, other):
         """
         If other is integer, compare residue to other
         If other is Mod instance, compare values
         """
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            return self.value == other.value
-        if isinstance(other, int):
-            return self.value == other % self.modulus
-        return NotImplemented
+        other_value = self._retrieve_value(other)
+        return self.value == other_value
 
     def __hash__(self):
         return hash((self.value, self.modulus))

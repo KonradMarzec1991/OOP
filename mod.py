@@ -1,3 +1,4 @@
+import operator
 from functools import total_ordering
 
 
@@ -21,11 +22,21 @@ class Mod:
         return self._value
 
     def _retrieve_value(self, other):
+        """Retrieves residue of other object"""
         if isinstance(other, Mod) and self.modulus == other.modulus:
             return other.value
         if isinstance(other, int):
             return other % self.modulus
         raise TypeError('Incompatible types')
+
+    def _perform_operation(self, other, op, *, in_place=False):
+        other_value = self._retrieve_value(other)
+        modified_value = op(self.value, other_value)
+        if in_place:
+            self._value = modified_value % self.modulus
+            return self
+        else:
+            return Mod(modified_value, self.modulus)
 
     def __eq__(self, other):
         """
@@ -50,67 +61,27 @@ class Mod:
     # Arithmetic operators
 
     def __add__(self, other):
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            return Mod(self.value + other.value, self.modulus)
-        if isinstance(other, int):
-            return Mod(self.value + other, self.modulus)
-        return NotImplemented
+        return self._perform_operation(other, operator.add)
 
     def __sub__(self, other):
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            return Mod(self.value - other.value, self.modulus)
-        if isinstance(other, int):
-            return Mod(self.value - other, self.modulus)
-        return NotImplemented
+        return self._perform_operation(other, operator.sub)
 
     def __mul__(self, other):
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            return Mod(self.value * other.value, self.modulus)
-        if isinstance(other, int):
-            return Mod(self.value * (other % self.modulus), self.modulus)
-        return NotImplemented
+        return self._perform_operation(other, operator.mul)
 
     def __pow__(self, other):
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            return Mod(self.value ** other.value, self.modulus)
-        if isinstance(other, int):
-            return Mod(self.value ** (other % self.modulus), self.modulus)
-        return NotImplemented
+        return self._perform_operation(other, operator.pow)
 
     # In-place operators
 
     def __iadd__(self, other):
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            self._value = (self.value + other.value) % self.modulus
-            return self
-        if isinstance(other, int):
-            self._value = (self.value + other) % self.modulus
-            return self
-        return NotImplemented
+        return self._perform_operation(other, operator.add, in_place=True)
 
     def __isub__(self, other):
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            self._value = (self.value - other.value) % self.modulus
-            return self
-        if isinstance(other, int):
-            self._value = (self.value - other) % self.modulus
-            return self
-        return NotImplemented
+        return self._perform_operation(other, operator.sub, in_place=True)
 
     def __imul__(self, other):
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            self._value = (self.value * other.value) % self.modulus
-            return self
-        if isinstance(other, int):
-            self._value = (self.value * other) % self.modulus
-            return self
-        return NotImplemented
+        return self._perform_operation(other, operator.mul, in_place=True)
 
     def __ipow__(self, other):
-        if isinstance(other, Mod) and self.modulus == other.modulus:
-            self._value = (self.value ** other.value) % self.modulus
-            return self
-        if isinstance(other, int):
-            self._value = (self.value ** (other.value % self.modulus)) % self.modulus
-            return self
-        return NotImplemented
+        return self._perform_operation(other, operator.pow, in_place=True)

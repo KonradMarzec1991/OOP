@@ -31,14 +31,21 @@ def html_dict(d):
 
 
 def htmlize(arg):
-    if isinstance(arg, int):
-        return html_int(arg)
-    if isinstance(arg, (float, Decimal)):
-        return html_real(arg)
-    if isinstance(arg, str):
-        return html_str(arg)
-    if isinstance(arg, (list, tuple)):
-        return html_list(arg)
-    if isinstance(arg, dict):
-        return html_dict(arg)
-    return html_escape(arg)
+
+    registry = {
+        object: html_escape,
+        int: html_int,
+        float: html_real,
+        Decimal: html_real,
+        str: html_str,
+        list: html_list,
+        tuple: html_list,
+        set: html_list,
+        dict: html_dict,
+    }
+
+    fn = registry.get(type(arg), registry[object])
+    return fn(arg)
+
+
+print(htmlize({1, 2, 3}))

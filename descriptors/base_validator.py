@@ -16,7 +16,7 @@ class BaseValidator:
 
     def validate(self, value):
         # this will need to be implemented specifically for each subclass
-        pass
+        return NotImplemented
 
     def __set__(self, instance, value):
         self.validate(value)

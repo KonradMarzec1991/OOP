@@ -53,4 +53,16 @@ def single_dispatch(fn):
 
     def decorated(arg):
         return registry.get(type(arg), registry[object])
+
+    def register(type_):
+        def inner(fn):
+            registry[type_] = fn
+            return fn
+        return inner
+
+    def dispatch(type_):
+        return registry.get(type_, registry[object])
+
+    decorated.register = register
+    decorated.dispatch = dispatch
     return decorated

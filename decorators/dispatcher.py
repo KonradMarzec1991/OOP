@@ -48,4 +48,9 @@ def htmlize(arg):
     return fn(arg)
 
 
-print(htmlize({1, 2, 3}))
+def single_dispatch(fn):
+    registry = {object: fn}
+
+    def decorated(arg):
+        return registry.get(type(arg), registry[object])
+    return decorated

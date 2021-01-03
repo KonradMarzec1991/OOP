@@ -70,22 +70,15 @@ def class_spec_logger(cls):
             result = fn(*args, **kwargs)
             print(f'Log: {fn.__qualname__} ({args}, {kwargs}) = {result}')
             return result
-
         return inner
 
     for name, obj in vars(cls).items():
-        if isinstance(obj, staticmethod):
-            print('decorating static method', cls, name)
+        if isinstance(obj, (staticmethod, classmethod)):
+            print('decorating static/class method', cls, name)
+            type_ = type(obj)
             original_func = obj.__func__
             decorated_func = func_logger(original_func)
-            method = staticmethod(decorated_func)
-            setattr(cls, name, method)
-
-        elif isinstance(obj, classmethod):
-            print('decorating callable', cls, name)
-            original_func = obj.__func__
-            decorated_func = func_logger(original_func)
-            method = classmethod(decorated_func)
+            method = type_(decorated_func)
             setattr(cls, name, method)
 
         elif isinstance(obj, property):

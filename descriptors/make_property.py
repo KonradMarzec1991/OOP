@@ -12,7 +12,7 @@ class MakeProperty:
             return self
         if self.fget is None:
             raise AttributeError(f'{self.fget} is not readable.')
-        return self.fset(instance)
+        return self.fget(instance)
 
     def __set__(self, instance, value):
         print('__set__ called')

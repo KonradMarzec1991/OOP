@@ -1,3 +1,7 @@
+import numbers
+
+
+# property factory
 def quantity(storage_name):
 
     def qty_getter(instance):
@@ -12,9 +16,27 @@ def quantity(storage_name):
     return property(fget=qty_getter, fset=qty_setter)
 
 
+# descriptor
+class Quantity:
+    def __init__(self, storage_name):
+        self.storage_name = storage_name
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return instance.__dict__.get(self.storage_name, None)
+
+    def __set__(self, instance, value):
+        if not isinstance(value, numbers.Integral):
+            raise ValueError(f'{self.storage_name} must be integral number')
+        if value <= 0:
+            raise ValueError(f'{self.storage_name} must be greater than 0')
+        instance.__dict__[self.storage_name] = value
+
+
 class LineItem:
-    weight = quantity('weight')
-    price = quantity('price')
+    weight = Quantity('weight')
+    price = Quantity('price')
 
     def __init__(self, description, weight, price):
         self.description = description

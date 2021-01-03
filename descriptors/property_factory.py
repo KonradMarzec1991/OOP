@@ -34,9 +34,31 @@ class Quantity:
         instance.__dict__[self.storage_name] = value
 
 
+# descriptor with no storage_name
+class QualityDescriptor:
+    __counter = 0
+
+    def __init__(self):
+        cls = self.__class__
+        prefix = cls.__name__
+        index = cls.__counter
+        self.storage_name = f'_{prefix}#{index}'
+        cls.__counter += 1
+
+    def __get__(self, instance, owner):
+        return getattr(instance, self.storage_name, None)
+
+    def __set__(self, instance, value):
+        if not isinstance(value, numbers.Integral):
+            raise ValueError(f'{self.storage_name} must be integral number')
+        if value <= 0:
+            raise ValueError(f'{self.storage_name} must be greater than 0')
+        setattr(instance, self.storage_name, value)
+
+
 class LineItem:
-    weight = Quantity('weight')
-    price = Quantity('price')
+    weight = QualityDescriptor()
+    price = QualityDescriptor()
 
     def __init__(self, description, weight, price):
         self.description = description

@@ -22,6 +22,7 @@ class AutoStorage:
 
 
 class Validated(abc.ABC, AutoStorage):
+
     def __set__(self, instance, value):
         value = self.validate(instance, value)
         super().__set__(instance, value)
@@ -32,8 +33,31 @@ class Validated(abc.ABC, AutoStorage):
 
 
 class Quantity(Validated):
-    pass
+    def validate(self, instance, value):
+        if isinstance(value, int) and value > 0:
+            return value
+        else:
+            raise ValueError(f'{value} must be a positive int type')
 
 
 class NonBlank(Validated):
-    pass
+    def validate(self, instance, value):
+        value = value.strip()
+        if isinstance(value, str) and len(value) > 0:
+            return value
+        else:
+            raise ValueError(f'{value} must be string with len > 0')
+
+
+class LineItem:
+    description = NonBlank()
+    weight = Quantity()
+    price = Quantity()
+
+    def __init__(self, description, weight, price):
+        self.description = description
+        self.weight = weight
+        self.price = price
+
+    def subtotal(self):
+        return self.weight * self.price

@@ -49,6 +49,26 @@ class SlottedStruct(type):
 
         setattr(cls_object, '__eq__', eq)
 
+        # __hash__
+        def hash_(self):
+            field_values = [
+                    getattr(self, field) for field in cls_object._fields
+                ]
+            return hash(tuple(field_values))
+
+        setattr(cls_object, '__hash__', hash_)
+
+        # __str__
+        def str_(self):
+            field_values = [
+                getattr(self, field) for field in cls_object._fields
+            ]
+            field_values_joined = ', '.join(map(str, field_values))
+            return f'{cls_object.__name__}({field_values_joined})'
+
+        setattr(cls_object, '__str__', str_)
+
+
 
         return cls_object
 

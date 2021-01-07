@@ -10,4 +10,11 @@ class Account(metaclass=AutoClassAttrib, account_type='Savings', apr=0.5):
     pass
 
 
-print(vars(Account))
+class MyMeta(type):
+    def __new__(mcls, name, bases, cls_dict, **kwargs):
+        cls_dict.update(kwargs)
+        return super().__new__(mcls, name, bases, cls_dict)
+
+
+class MyClass(metaclass=MyMeta, k1=1, k2=2):
+    pass

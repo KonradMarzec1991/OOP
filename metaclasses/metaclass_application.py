@@ -35,6 +35,21 @@ class SlottedStruct(type):
                 property(fget=lambda self, attrib=slot: getattr(self, attrib))
             )
 
+        # __eq__
+        def eq(self, other):
+            if isinstance(other, cls_object):
+                self_fields = [
+                    getattr(self, field) for field in cls_object._fields
+                ]
+                other_fields = [
+                    getattr(self, field) for field in other._fields
+                ]
+                return self_fields == other_fields
+            return False
+
+        setattr(cls_object, '__eq__', eq)
+
+
         return cls_object
 
 

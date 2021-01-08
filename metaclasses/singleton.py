@@ -1,4 +1,4 @@
-class Singleton:
+class SingletonTry:
     _existing_instance = None
 
     def __new__(cls):
@@ -13,3 +13,12 @@ class Singleton:
         return cls._existing_instance
 
 
+class Singleton(type):
+    instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        print(f'Request received to create an instance of class: {cls.__name__}')
+        existing_instance = Singleton.instances.get(cls, None)
+        if existing_instance is None:
+            Singleton.instances[cls] = super().__call__(*args, **kwargs)
+        return Singleton.instances[cls]

@@ -27,6 +27,7 @@ class EntityMeta(type):
         return cls
 
 
+# main class
 class Entity(metaclass=EntityMeta):
     pass
 
@@ -52,3 +53,5 @@ class LineItem(Entity):
 
 for name in LineItem.fields_names():
     print(name)
+
+

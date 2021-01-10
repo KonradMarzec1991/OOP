@@ -12,16 +12,6 @@ class PersonClass:
             raise AttributeError(f'Could not find {name} or {alt_name}')
 
 
-class DefaultClass:
-    def __init__(self, attr_default=None):
-        self._attr_default = attr_default
-
-    def __getattr__(self, name):
-        print(f'{name} not found, creating and setting it to default')
-        setattr(self, name, self._attr_default)
-        return self._attr_default
-
-
 class AttributeNotFoundLogger:
     def __getattr__(self, name):
         err_msg = f'{type(self).__name__} object has no attribute {name}'
@@ -29,10 +19,24 @@ class AttributeNotFoundLogger:
         raise AttributeError(err_msg)
 
 
-class Person:
+class DefaultClass:
+    def __init__(self, attr_default=None):
+        self._attr_default = attr_default
+
+    def __getattr__(self, name):
+        print(f'{name} not found, creating and setting it to default')
+        default_value = super().__getattribute__('_attr_default')
+        setattr(self, name, default_value)
+        return default_value
+
+
+class Person(DefaultClass):
     def __init__(self, name, age):
-        self.name = name
-        self.age = age
+        super().__init__('Not Available')
+        if name is not None:
+            self._name = name
+        if name is not None:
+            self._age = age
 
     def __getattribute__(self, name):
         if name.startswith('_') and not name.startswith('__'):

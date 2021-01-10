@@ -5,6 +5,7 @@ from descriptors.auto_storage import (
 )
 
 
+# basic decorator
 def entity(cls):
     for key, attr in cls.__dict__.items():
         if isinstance(attr, Validated):
@@ -13,8 +14,18 @@ def entity(cls):
     return cls
 
 
-@entity
-class LineItem:
+# metaclass
+class Entity(type):
+    def __new__(mcls, class_name, class_bases, class_dict):
+        cls = super().__new__(mcls, class_name, class_bases, class_dict)
+        for key, attr in cls.__dict__.items():
+            if isinstance(attr, Validated):
+                type_name = type(attr).__name__
+                attr.storage_name = f'{type_name}#{key}'
+        return cls
+
+
+class LineItem(metaclass=Entity):
     description = NonBlank()
     weight = Quantity()
     price = Quantity()
@@ -26,5 +37,4 @@ class LineItem:
 
     def subtotal(self):
         return self.weight * self.price
-
 

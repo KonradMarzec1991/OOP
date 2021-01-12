@@ -1,3 +1,4 @@
+import logging
 from functools import wraps
 from types import MethodType
 
@@ -35,3 +36,24 @@ class Person:
     @Logger
     def say_hello(self):
         return f'{self.name} says hello!'
+
+
+def logged(level, name=None, message=None):
+    """
+    Add logging to a function, level is the
+    logging level, name is the logger, and message
+    is the log message. If name and message aren't
+    specified, they default to the function's module and name.
+    """
+
+    def decorator(func):
+        log_name = name if name else func.__module__
+        log = logging.getLogger(log_name)
+        log_msg = message if message else func.__name__
+
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            log.log(level, log_msg)
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator

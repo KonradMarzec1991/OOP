@@ -1,3 +1,4 @@
+import inspect
 import logging
 from functools import wraps
 from types import MethodType
@@ -57,3 +58,15 @@ def logged(level, name=None, message=None):
             return func(*args, **kwargs)
         return wrapper
     return decorator
+
+
+def optional_debug(func):
+    if 'debug' in inspect.getargspec(func).args:
+        raise TypeError('debug argument already defined')
+
+    @wraps(func)
+    def wrapper(*args, debug=False, **kwargs):
+        if debug:
+            print('Calling', func.__name__)
+        return func(*args, **kwargs)
+    return wrapper

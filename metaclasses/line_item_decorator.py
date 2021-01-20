@@ -51,7 +51,19 @@ class LineItem(Entity):
             yield key
 
 
-for name in LineItem.fields_names():
-    print(name)
+def log_getattribute(cls):
+    orig_getattribute = cls.__getattribute__
 
+    def new_getattribute(self, name):
+        print('Getting: ', name)
+        return orig_getattribute(self, name)
+
+    cls.__getattribute__ = new_getattribute
+    return cls
+
+
+@log_getattribute
+class Spam:
+    def __init__(self, name):
+        self.name = name
 

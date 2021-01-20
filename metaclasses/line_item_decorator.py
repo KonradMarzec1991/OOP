@@ -51,6 +51,7 @@ class LineItem(Entity):
             yield key
 
 
+# Using decorator to patch class definitions
 def log_getattribute(cls):
     orig_getattribute = cls.__getattribute__
 
@@ -66,4 +67,3 @@ def log_getattribute(cls):
 class Spam:
     def __init__(self, name):
         self.name = name
-

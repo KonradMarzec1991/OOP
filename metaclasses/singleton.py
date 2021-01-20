@@ -22,3 +22,19 @@ class Singleton(type):
         if existing_instance is None:
             Singleton.instances[cls] = super().__call__(*args, **kwargs)
         return Singleton.instances[cls]
+
+
+class SingletonOther(type):
+    def __init__(self, *args, **kwargs):
+        self._instance = None
+        super().__init__(*args, **kwargs)
+
+    def __call__(self, *args, **kwargs):
+        if self._instance is None:
+            self._instance = super().__call__(*args, **kwargs)
+        return self._instance
+
+
+class Spam(metaclass=SingletonOther):
+    def __init__(self):
+        print('Creating Spam')

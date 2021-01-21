@@ -29,10 +29,10 @@ class SingletonOther(type):
         self._instance = None
         super().__init__(*args, **kwargs)
 
-    def __call__(self, *args, **kwargs):
-        if self._instance is None:
-            self._instance = super().__call__(*args, **kwargs)
-        return self._instance
+    def __call__(cls, *args, **kwargs):
+        if cls._instance is None:
+            cls._instance = super().__call__(*args, **kwargs)
+        return cls._instance
 
 
 class Spam(metaclass=SingletonOther):

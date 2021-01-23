@@ -1,4 +1,4 @@
-from descriptors.auto_storage import (
+from Python.descriptors.auto_storage import (
     NonBlank,
     Quantity,
     Validated

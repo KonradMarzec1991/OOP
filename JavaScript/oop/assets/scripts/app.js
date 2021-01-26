@@ -13,6 +13,21 @@ class Product {
 }
 
 
+class ShoppingCart {
+    items = [];
+
+    render() {
+        const cartEl = document.createElement('section');
+        cartEl.innerHTML = `
+            <h2>Total: \$${0}</h2>
+            <button>Order Now!</button>
+        `;
+        cartEl.className = 'cart';
+        return cartEl;
+    }
+}
+
+
 class ProductItem {
     constructor(product) {
         this.product = product;

@@ -1,13 +1,3 @@
-def open_file(f_name, mode='r'):
-    print(f'openinig {f_name} file')
-    f = open(f_name, mode)
-    try:
-        yield f
-    finally:
-        print(f'closing {f_name} file')
-        f.close()
-
-
 class GenContextManager:
     def __init__(self, gen):
         self._gen = gen
@@ -25,6 +15,20 @@ class GenContextManager:
         return False
 
 
-file_gen = open_file('test.txt', 'r')
-with GenContextManager(file_gen) as f:
-    f.writelines('abcd')
+def context_manager(gen_fn):
+    def wrapper(*args, **kwargs):
+        gen = gen_fn(*args, **kwargs)
+        ctx = GenContextManager(gen)
+        return ctx
+    return wrapper
+
+
+@context_manager
+def open_file(f_name, mode='r'):
+    print(f'openinig {f_name} file')
+    f = open(f_name, mode)
+    try:
+        yield f
+    finally:
+        print(f'closing {f_name} file')
+        f.close()

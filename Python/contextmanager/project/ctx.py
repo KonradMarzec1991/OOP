@@ -37,11 +37,6 @@ class FileParser:
             return self._nt(*next(self._reader))
 
 
-with FileParser('cars.csv') as data:
-    for row in islice(data, 10):
-        print(row)
-
-
 @contextmanager
 def parsed_data(f_name):
     f = open(f_name, mode='r')
@@ -51,6 +46,11 @@ def parsed_data(f_name):
         reader = csv.reader(f, dialect)
         headers = map(lambda s: s.lower(), next(reader))
         nt = namedtuple('Data', headers)
-        yield (nt(*row) for row in headers)
+        yield (nt(*row) for row in reader)
     finally:
         f.close()
+
+
+with parsed_data('cars.csv') as f:
+    for row in islice(f, 10):
+        print(row)

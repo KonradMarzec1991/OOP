@@ -1,4 +1,5 @@
 import csv
+from collections import namedtuple
 
 f_names = 'cars.csv', 'personal_info.csv'
 
@@ -27,3 +28,10 @@ class FileParser:
     def __enter__(self):
         self._f = open(self.f_name, 'r')
         self._reader = csv.reader(self.f_name, dialect=get_dialect(self.f_name))
+        headers = map(lambda s: s.lower(), next(self._reader))
+        self._nt = namedtuple('Data', headers)
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self._f.close()
+        return False

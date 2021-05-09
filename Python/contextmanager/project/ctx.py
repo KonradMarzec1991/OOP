@@ -1,24 +1,20 @@
 import csv
 from collections import namedtuple
 from contextlib import contextmanager
-from itertools import islice
-
-
-f_names = 'cars.csv', 'personal_info.csv'
-
-
-def get_dialect(f_name):
-    with open(f_name) as f:
-        return csv.Sniffer().sniff(f.read(1000))
 
 
 class FileParser:
     def __init__(self, f_name):
         self.f_name = f_name
 
+    @staticmethod
+    def get_dialect(f_name):
+        with open(f_name) as f:
+            return csv.Sniffer().sniff(f.read(1000))
+
     def __enter__(self):
         self._f = open(self.f_name, 'r')
-        self._reader = csv.reader(self._f, get_dialect(self.f_name))
+        self._reader = csv.reader(self._f, self.get_dialect(self.f_name))
         headers = map(lambda s: s.lower(), next(self._reader))
         self._nt = namedtuple('Data', headers)
         return self
@@ -49,8 +45,3 @@ def parsed_data(f_name):
         yield (nt(*row) for row in reader)
     finally:
         f.close()
-
-
-with parsed_data('cars.csv') as f:
-    for row in islice(f, 10):
-        print(row)

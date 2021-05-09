@@ -35,3 +35,12 @@ class FileParser:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self._f.close()
         return False
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self._f.closed:
+            raise StopIteration
+        else:
+            return self._nt(*next(self._reader))

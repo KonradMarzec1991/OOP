@@ -18,6 +18,12 @@ class FactIter:
             return fact
 
 
-f5 = FactIter(5)
-print(list(f5))
-print(list(f5))
+def fact():
+    i = 0
+
+    def inner():
+        nonlocal i
+        f = math.factorial(i)
+        i += 1
+        return f
+    return inner

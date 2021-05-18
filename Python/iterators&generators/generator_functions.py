@@ -64,6 +64,14 @@ class FibIterator:
         return result
 
 
-fib_iter = fib_iterative(7)
-for i in fib_iter:
-    print(i)
+def squares_gen(n):
+    for i in range(n):
+        yield i ** 2
+
+
+class Squares:
+    def __init__(self, n):
+        self.n = n
+
+    def __iter__(self):
+        return squares_gen(self.n)

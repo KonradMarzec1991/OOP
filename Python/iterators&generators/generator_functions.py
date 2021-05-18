@@ -38,10 +38,14 @@ def fib_recursive(n):
 
 
 def fib_iterative(n):
-    fib_0, fib_1 = 1, 1
-    for i in range(n - 1):
+    fib_0 = 1
+    yield fib_0
+    fib_1 = 1
+    yield fib_1
+
+    for _ in range(n - 2):
         fib_0, fib_1 = fib_1, fib_0 + fib_1
-    return fib_1
+        yield fib_1
 
 
 class FibIterator:
@@ -60,6 +64,6 @@ class FibIterator:
         return result
 
 
-fib_iter = FibIterator(10)
+fib_iter = fib_iterative(7)
 for i in fib_iter:
     print(i)

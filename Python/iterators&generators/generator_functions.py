@@ -1,4 +1,5 @@
 import math
+from functools import lru_cache
 
 
 class FactIter:
@@ -27,3 +28,10 @@ def fact():
         i += 1
         return f
     return inner
+
+
+@lru_cache()
+def fib_recursive(n):
+    if n <= 1:
+        return 1
+    return fib_recursive(n - 1) + fib_recursive(n - 2)

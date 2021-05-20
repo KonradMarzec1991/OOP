@@ -75,3 +75,11 @@ class Squares:
     def squares_gen(n):
         for i in range(n):
             yield i ** 2
+
+
+def get_squares():
+    yield from (i ** 2 for i in range(10))
+
+
+for item in get_squares():
+    print(item)

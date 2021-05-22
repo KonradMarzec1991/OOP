@@ -4,6 +4,10 @@ from datetime import datetime
 
 
 def parse_int(value, *, default=None):
+    """
+    Returns parsed integer or None
+    """
+
     try:
         return int(value)
     except ValueError:
@@ -11,6 +15,10 @@ def parse_int(value, *, default=None):
 
 
 def parse_date(value, *, default=None):
+    """
+    Returns parsed date or None
+    """
+
     date_format = '%m/%d/%Y'
     try:
         return datetime.strptime(value, date_format).date()
@@ -19,6 +27,10 @@ def parse_date(value, *, default=None):
 
 
 def parse_str(value, *, default=None):
+    """
+    Returns parsed string or None
+    """
+
     try:
         cleaned = value.strip()
         if not cleaned:
@@ -41,30 +53,28 @@ column_parser = (
 )
 
 
-def parse_row(row, default=None):
+def parse_row(row, column_names, default=None):
+    """
+    Returns namedtuple with applied parsers for its fields
+    """
+
+    Ticket = namedtuple('Ticket', column_names)
+
     fields = row.strip('\n').split(',')
-    parsed_data = (func(field) for func, field in zip(column_parser, fields))
-    if all(bool(item) for item in parsed_data):
-        return 'x'
+    parsed_data = [func(field) for func, field in zip(column_parser, fields)]
+    if all(item is not None for item in parsed_data):
+        return Ticket(*parsed_data)
     return default
 
 
 def open_file(file_name: str):
     with open(file_name) as f:
-        column_headers = next(f).strip('\n').split(',')
-        sample_data = next(f)
-
-        print(column_headers)
-        print(list(parse_row(sample_data)))
-
         column_names = [
             header.replace(' ', '_').lower()
-            for header in column_headers
+            for header in next(f).strip('\n').split(',')
         ]
-        print(column_names)
-        print(list(zip(column_names, sample_data)))
-
-        Ticket = namedtuple('Ticket', column_names)
+        for row in f:
+            parse_row(row, column_names)
 
 
 open_file('nyc_parking_tickets_extract.csv')

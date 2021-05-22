@@ -7,9 +7,7 @@ FILE_NAME = 'nyc_parking_tickets_extract.csv'
 
 
 def parse_int(value, *, default=None):
-    """
-    Returns parsed integer or None
-    """
+    """Returns parsed integer or None"""
 
     try:
         return int(value)
@@ -18,9 +16,7 @@ def parse_int(value, *, default=None):
 
 
 def parse_date(value, *, default=None):
-    """
-    Returns parsed date or None
-    """
+    """Returns parsed date or None"""
 
     date_format = '%m/%d/%Y'
     try:
@@ -30,9 +26,7 @@ def parse_date(value, *, default=None):
 
 
 def parse_str(value, *, default=None):
-    """
-    Returns parsed string or None
-    """
+    """Returns parsed string or None"""
 
     try:
         cleaned = value.strip()
@@ -57,9 +51,7 @@ column_parser = (
 
 
 def get_headers(file_name):
-    """
-    Returns list of headers for given file
-    """
+    """Returns list of headers for given file"""
 
     with open(file_name) as f:
         return [
@@ -69,9 +61,7 @@ def get_headers(file_name):
 
 
 def parse_row(row, default=None):
-    """
-    Returns namedtuple with applied parsers for its fields
-    """
+    """Returns namedtuple with applied parsers for its fields"""
 
     Ticket = namedtuple('Ticket', get_headers(FILE_NAME))
 
@@ -83,6 +73,8 @@ def parse_row(row, default=None):
 
 
 def read_file(file_name):
+    """Iterates lazily given file"""
+
     with open(file_name) as f:
         next(f)
         yield from f

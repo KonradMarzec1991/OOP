@@ -1,4 +1,4 @@
-from collections import namedtuple
+from collections import namedtuple, defaultdict
 from functools import partial
 from datetime import datetime
 
@@ -73,11 +73,20 @@ def open_file(file_name: str):
             header.replace(' ', '_').lower()
             for header in next(f).strip('\n').split(',')
         ]
-        for row in f:
-            parsed_row = parse_row(row, column_names)
-            if parsed_row:
-                print(
-                    list(zip(column_names, row.strip('\n').split(','))),
-                    end='\n\n'
-                )
 
+        print(column_names)
+
+        makes_count = defaultdict(int)
+        for row in f:
+            ticket = parse_row(row, column_names)
+            if ticket:
+                makes_count[ticket.vehicle_make] += 1
+
+        makes_count = sorted(
+            makes_count.items(),
+            key=lambda t: -t[1]
+        )
+        print(makes_count)
+
+
+open_file('nyc_parking_tickets_extract.csv')

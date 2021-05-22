@@ -62,7 +62,7 @@ def parse_row(row, column_names, default=None):
 
     fields = row.strip('\n').split(',')
     parsed_data = [func(field) for func, field in zip(column_parser, fields)]
-    if all(item is not None for item in parsed_data):
+    if all(bool(item) for item in parsed_data):
         return Ticket(*parsed_data)
     return default
 
@@ -74,7 +74,10 @@ def open_file(file_name: str):
             for header in next(f).strip('\n').split(',')
         ]
         for row in f:
-            parse_row(row, column_names)
+            parsed_row = parse_row(row, column_names)
+            if parsed_row:
+                print(
+                    list(zip(column_names, row.strip('\n').split(','))),
+                    end='\n\n'
+                )
 
-
-open_file('nyc_parking_tickets_extract.csv')

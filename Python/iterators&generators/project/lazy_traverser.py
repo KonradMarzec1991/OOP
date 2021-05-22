@@ -2,26 +2,23 @@ from collections import namedtuple
 import csv
 
 
-DataRow = namedtuple('DataRow', [
-    'summons_number',
-    'plate_id',
-    'registration_state',
-    'plate_type',
-    'issue_date',
-    'violation_code',
-    'vehicle_body_type',
-    'vehicle_make',
-    'violation_description',
-])
-
 
 def open_file(file_name: str):
     with open(file_name) as f:
-        reader = csv.reader(f)
-        print(next(reader))
+        column_headers = next(f).strip('\n').split(',')
+        sample_data = next(f).strip('\n').split(',')
 
-        for row in reader:
-            print(row)
+        print(column_headers)
+        print(sample_data)
+
+        column_names = [
+            header.replace(' ', '_').lower()
+            for header in column_headers
+        ]
+        print(column_names)
+        print(list(zip(column_names, sample_data)))
+
+        Ticket = namedtuple('Ticket', column_names)
 
 
 open_file('nyc_parking_tickets_extract.csv')

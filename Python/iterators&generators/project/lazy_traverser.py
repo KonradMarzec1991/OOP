@@ -3,6 +3,9 @@ from functools import partial
 from datetime import datetime
 
 
+FILE_NAME = 'nyc_parking_tickets_extract.csv'
+
+
 def parse_int(value, *, default=None):
     """
     Returns parsed integer or None
@@ -53,12 +56,24 @@ column_parser = (
 )
 
 
-def parse_row(row, column_names, default=None):
+def get_headers(file_name):
+    """
+    Returns list of headers for given file
+    """
+
+    with open(file_name) as f:
+        return [
+            header.replace(' ', '_').lower()
+            for header in next(f).strip('\n').split(',')
+        ]
+
+
+def parse_row(row, default=None):
     """
     Returns namedtuple with applied parsers for its fields
     """
 
-    Ticket = namedtuple('Ticket', column_names)
+    Ticket = namedtuple('Ticket', get_headers(FILE_NAME))
 
     fields = row.strip('\n').split(',')
     parsed_data = [func(field) for func, field in zip(column_parser, fields)]
@@ -67,26 +82,20 @@ def parse_row(row, column_names, default=None):
     return default
 
 
-def open_file(file_name: str):
+def read_file(file_name):
     with open(file_name) as f:
-        column_names = [
-            header.replace(' ', '_').lower()
-            for header in next(f).strip('\n').split(',')
-        ]
+        next(f)
+        yield from f
 
-        print(column_names)
 
-        makes_count = defaultdict(int)
+def violation_count(file_name):
+    makes_count = defaultdict(int)
+    with open(file_name) as f:
         for row in f:
-            ticket = parse_row(row, column_names)
+            ticket = parse_row(row)
             if ticket:
                 makes_count[ticket.vehicle_make] += 1
-
-        makes_count = sorted(
-            makes_count.items(),
-            key=lambda t: -t[1]
-        )
-        print(makes_count)
+        return sorted(makes_count.items(), key=lambda t: -t[1])
 
 
-open_file('nyc_parking_tickets_extract.csv')
+print(violation_count(FILE_NAME))

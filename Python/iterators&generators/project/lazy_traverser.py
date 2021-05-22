@@ -76,9 +76,9 @@ def parse_row(row, default=None):
     Ticket = namedtuple('Ticket', get_headers(FILE_NAME))
 
     fields = row.strip('\n').split(',')
-    parsed_data = [func(field) for func, field in zip(column_parser, fields)]
-    if all(bool(item) for item in parsed_data):
-        return Ticket(*parsed_data)
+    parsed = [func(field) for func, field in zip(column_parser, fields)]
+    if all(bool(item) for item in parsed):
+        return Ticket(*parsed)
     return default
 
 
@@ -88,14 +88,15 @@ def read_file(file_name):
         yield from f
 
 
-def violation_count(file_name):
+def parsed_data():
+    for row in read_file(FILE_NAME):
+        parsed = parse_row(row)
+        if parsed:
+            yield parsed
+
+
+def violation_count():
     makes_count = defaultdict(int)
-    with open(file_name) as f:
-        for row in f:
-            ticket = parse_row(row)
-            if ticket:
-                makes_count[ticket.vehicle_make] += 1
-        return sorted(makes_count.items(), key=lambda t: -t[1])
-
-
-print(violation_count(FILE_NAME))
+    for ticket in parsed_data():
+        makes_count[ticket.vehicle_make] += 1
+    return sorted(makes_count.items(), key=lambda t: -t[1])
